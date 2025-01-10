@@ -1,0 +1,21 @@
+# Bật Rewrite Engine
+RewriteEngine On
+
+# Chuyển hướng URL chứa "index.php" về URL không có "index.php"
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s/(.*)index\.php([^\s]*)\sHTTP
+RewriteRule ^(.*)index\.php(.*)$ /$1$2 [R=301,L]
+
+# Loại bỏ đuôi .php
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^(.*)$ $1.php [L]
+
+# Loại bỏ đuôi .html
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.html -f
+RewriteRule ^(.*)$ $1.html [L]
+
+# Chuyển hướng URL thân thiện về index.php để xử lý
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [L]
