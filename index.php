@@ -37,24 +37,26 @@ if ($conn->connect_error) {
             $role_id = $user['role_id'];
             $website_type = $user['website_type'];
             $db_name = $user['db_name'];
+            $website_type = $user['website_type'];
 
             if ($role_id === 'admin' && !empty($db_name)) {
                 // Tạo session
                 $_SESSION['username'] = $username;
                 $_SESSION['role_id'] = $role_id;
                 $_SESSION['db_connected'] = $db_name;
+                $_SESSION['website_type'] = $website_type;
 
                 // Xác định URL chuyển hướng
                 $redirect_url = "";
                 switch ($website_type) {
                     case 'ban-hang':
-                        $redirect_url = "./admin/ad_banhang/index.php";
+                        $redirect_url = "./ad_banhang/index.php";
                         break;
                     case 'gioi-thieu':
-                        $redirect_url = "./admin/ad_gioithieu/index.php";
+                        $redirect_url = "./ad_gioithieu/index.php";
                         break;
                     case 'tin-tuc':
-                        $redirect_url = "./admin/ad_tintuc/index.php";
+                        $redirect_url = "./ad_tintuc/index.php";
                         break;
                     default:
                         $alert = "
@@ -100,6 +102,24 @@ if ($conn->connect_error) {
     }
     $conn->close();
 }
+// Kiểm tra msg=404 trong URL
+if (isset($_GET['msg']) && $_GET['msg'] == '404') {
+    // Lấy URL hiện tại và loại bỏ ?msg=404
+    $current_url = strtok($_SERVER["REQUEST_URI"], '?'); // Lấy URL trước dấu ?
+    $redirect_url = $current_url; // URL không có tham số
+
+    // Gán script SweetAlert2
+    $alert = "
+        Swal.fire({
+            icon: 'error',
+            title: 'Bạn không có quyền truy cập',
+            text: 'Vui lòng liên hệ Admin để được hỗ trợ'
+        }).then(() => {
+            window.location.href = '$redirect_url';
+        });
+    ";
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -130,14 +150,14 @@ if ($conn->connect_error) {
                         Chào Mừng Bạn Đến Với Trường Thành Web
                     </span>
                     <div class="wrap-input100 validate-input" data-validate="Valid email is required: ex@abc.xyz">
-                        <input class="input100" type="text" name="username" placeholder="Nhập Email...">
+                        <input class="input100" type="text" name="username" placeholder="Email...">
                         <span class="focus-input100"></span>
                         <span class="symbol-input100">
                             <i class="fa fa-envelope" aria-hidden="true"></i>
                         </span>
                     </div>
                     <div class="wrap-input100 validate-input" data-validate="Password is required">
-                        <input class="input100" type="password" name="password" placeholder="Nhập Mật Khẩu...">
+                        <input class="input100" type="password" name="password" placeholder="Password...">
                         <span class="focus-input100"></span>
                         <span class="symbol-input100">
                             <i class="fa fa-lock" aria-hidden="true"></i>
@@ -148,6 +168,12 @@ if ($conn->connect_error) {
                             Đăng nhập
                         </button>
                     </div>
+                    <div class="container-login100-form-btn">
+                        <a href="src/forgot_password.php">
+                            Quên mật khẩu
+                        </a>
+                    </div>
+
                 </form>
             </div>
         </div>
